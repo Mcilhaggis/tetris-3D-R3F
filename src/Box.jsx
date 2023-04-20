@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber'
 
 export default function Box(props) {
   const ref = useRef()
+  
   const [selected, setSelected] = useState()
   const [movingLeft, setMovingLeft] = useState(false)
   const [movingRight, setMovingRight] = useState(false)
