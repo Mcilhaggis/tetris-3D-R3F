@@ -7,25 +7,29 @@ export default function Box(props) {
   const [movingLeft, setMovingLeft] = useState(false)
   const [movingRight, setMovingRight] = useState(false)
   const [movingDown, setMovingDown] = useState(false)
+  const [locked , setIsLocked] = useState(false)
 
   useFrame((_, delta) => {
+    if(ref.current.position.y === 0.5){
+      setIsLocked(true)
+    }
     // If space bar pressed, send all the way down.
     if (props.keyMap['Space'] && selected) {
       ref.current.position.y = 0.5
     }
-    if (props.keyMap['KeyA'] && selected && !movingLeft && ref.current.position.x > -4.5) {
+    if (props.keyMap['KeyA'] && selected && !movingLeft && ref.current.position.x > -4.5 && !locked) {
       ref.current.position.x -= 1
       setMovingLeft(true)
     } else if (!props.keyMap['KeyA'] && movingLeft) {
       setMovingLeft(false)
     }
-    if (props.keyMap['KeyD'] && selected && !movingRight && ref.current.position.x < 4.5) {
+    if (props.keyMap['KeyD'] && selected && !movingRight && ref.current.position.x < 4.5 && !locked) {
       ref.current.position.x += 1
       setMovingRight(true)
     } else if ((!props.keyMap['KeyD'] && movingRight)) {
       setMovingRight(false)
     }
-    if (props.keyMap['KeyS'] && selected && !movingDown && ref.current.position.y > 0.5) {
+    if (props.keyMap['KeyS'] && selected && !movingDown && ref.current.position.y > 0.5 && !locked) {
       ref.current.position.y -= 1
       setMovingDown(true)
     } else if ((!props.keyMap['KeyS'] && movingDown)) {
