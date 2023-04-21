@@ -5,31 +5,30 @@ import { useFrame } from '@react-three/fiber'
 export default function Box(props) {
   const ref = useRef()
 
-  const [selected, setSelected] = useState()
+  const [selected, setSelected] = useState(true)
   const [movingLeft, setMovingLeft] = useState(false)
   const [movingRight, setMovingRight] = useState(false)
   const [movingDown, setMovingDown] = useState(false)
   const [locked, setIsLocked] = useState(false)
+  const [count, setCount] = useState(0)
 
-  function moveDown() {
+  const moveDown = () => {
     if (ref.current.position.y > 0.5 && !locked) {
       ref.current.position.y -= 0.5;
-      console.log(ref.current.position.y);
       if (ref.current.position.y <= 0.5) {
         setIsLocked(true);
         ref.current.position.y = 0.5;
       }
+      setCount((count) => count + 1);
     }
   }
 
   useEffect(() => {
-    if (selected && ref.current.position.y > 0.5) {
-      const interval = setInterval(() => {
-        moveDown();
-      }, 1000);
-      return () => clearInterval(interval);
-    }
-  });
+    const timer = setInterval(() => {
+      moveDown();
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
 
   useFrame((_, delta) => {
@@ -100,7 +99,7 @@ export default function Box(props) {
   // }, [locked])
 
   return (
-    <mesh ref={ref} {...props} onPointerDown={() => setSelected(!selected)}>
+    <mesh ref={ref} {...props}>
       <boxGeometry />
       <meshBasicMaterial color={0x00ff00} wireframe={!locked} />
     </mesh>
