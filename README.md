@@ -12,6 +12,7 @@ Blcoks cannot be placed where another exists - done
 once the blocks hit the ground level they cannot be moved - done
 once the blocks hits the top of another block that is placed they cannot be moved - done
 
+once a block is locked, generate a new one 
 when a line of blocks are made it must be removed
 on a timer the block should move down one by its own accord
 when a line of blocks is removed the score goes up 

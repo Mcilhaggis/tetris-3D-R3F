@@ -8,6 +8,7 @@ export default function App() {
   const keyMap = useKeyboard()
   const pos = [-1.5, 5.5, 0.5]
   const [posStore, setPosStore] = useState([])
+  const [blockInPlay, setBlockInPlay] = useState(false)
 
   const checkValidMove = (newStateID, newState) => {
     const existingItem = posStore.find(item => item.id !== newStateID && item.x === newState.x && item.y === newState.y);
@@ -16,7 +17,7 @@ export default function App() {
       return false;
     } else return true;
   }
-  const updateState = (newStateID, newState) => {
+  const updatePosState = (newStateID, newState) => {
 
     const updateArr = posStore.map(item => {
       if (item.id === newStateID) {
@@ -36,10 +37,22 @@ export default function App() {
     setPosStore(updateArr)
     return true;
   }
+
+  const updateBlockInPlay = (newState) => {
+    console.log(newState)
+    setBlockInPlay(newState)
+  }
+
   return (
     <Canvas camera={{ position: [3, 6, 8] }} >
       {[...Array(1)].map((x, index) => (
-        <Box position={[pos[0] + index, pos[1], pos[2]]} checkValidMove={checkValidMove} updateState={updateState} key={index} keyMap={keyMap} />
+        <Box
+          key={index}
+          position={[pos[0] + index, pos[1], pos[2]]}
+          checkValidMove={checkValidMove}
+          updatePosState={updatePosState}
+          keyMap={keyMap}
+          updateBlockInPlay={updateBlockInPlay} />
       ))}
       <OrbitControls maxPolarAngle={Math.PI / 2} />
       <axesHelper args={[5]} />

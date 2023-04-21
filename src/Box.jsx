@@ -1,5 +1,6 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
+
 
 export default function Box(props) {
   const ref = useRef()
@@ -10,15 +11,33 @@ export default function Box(props) {
   const [movingDown, setMovingDown] = useState(false)
   const [locked, setIsLocked] = useState(false)
 
-  useFrame((_, delta) => {
-    // Make the current block always moving twoards the bottom until it hits the plane
+  function moveDown() {
     if (ref.current.position.y > 0.5 && !locked) {
-      ref.current.position.y -= 0.5 * delta;
+      ref.current.position.y -= 0.5;
+      console.log(ref.current.position.y);
       if (ref.current.position.y <= 0.5) {
-        setIsLocked(true)
+        setIsLocked(true);
         ref.current.position.y = 0.5;
       }
     }
+  }
+
+  useEffect(() => {
+    if (selected && ref.current.position.y > 0.5) {
+      const interval = setInterval(() => {
+        moveDown();
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  });
+
+
+  useFrame((_, delta) => {
+    if (ref.current.position.y <= 0.5) {
+      setIsLocked(true)
+      ref.current.position.y = 0.5;
+    }
+
     // If its sitting at the bottom of the board, restrict movement
     if (ref.current.position.y === 0.5) {
       setIsLocked(true)
@@ -26,7 +45,7 @@ export default function Box(props) {
     // If space bar pressed, send all the way down.
     if (props.keyMap['Space'] && selected) {
       ref.current.position.y = 0.5
-      props.updateState(ref.current.uuid, ref.current.position);
+      props.updatePosState(ref.current.uuid, ref.current.position);
 
     }
     // Moving negatively on x-axis (left)
@@ -36,7 +55,7 @@ export default function Box(props) {
       let validMove = props.checkValidMove(ref.current.uuid, newPosition); //to check if its moving to an empty space
       if (validMove) {
         ref.current.position.x -= 1
-        props.updateState(ref.current.uuid, ref.current.position);
+        props.updatePosState(ref.current.uuid, ref.current.position);
         setMovingLeft(true)
       } else return
 
@@ -50,7 +69,7 @@ export default function Box(props) {
       let validMove = props.checkValidMove(ref.current.uuid, newPosition);
       if (validMove) {
         ref.current.position.x += 1
-        props.updateState(ref.current.uuid, ref.current.position);
+        props.updatePosState(ref.current.uuid, ref.current.position);
         setMovingRight(true)
       } else return
     } else if ((!props.keyMap['KeyD'] && movingRight)) {
@@ -63,7 +82,7 @@ export default function Box(props) {
       let validMove = props.checkValidMove(ref.current.uuid, newPosition);
       if (validMove) {
         ref.current.position.y -= 1
-        props.updateState(ref.current.uuid, ref.current.position);
+        props.updatePosState(ref.current.uuid, ref.current.position);
         setMovingDown(true)
       } else {
         setIsLocked(true)
@@ -72,13 +91,20 @@ export default function Box(props) {
     } else if ((!props.keyMap['KeyS'] && movingDown)) {
       setMovingDown(false)
     }
-
   })
+
+  // useEffect(() => {
+  //   if (locked) {
+  //     props.updateBlockInPlay(false)
+  //   }
+  // }, [locked])
+
   return (
     <mesh ref={ref} {...props} onPointerDown={() => setSelected(!selected)}>
       <boxGeometry />
-      <meshBasicMaterial color={0x00ff00} wireframe={!selected} />
+      <meshBasicMaterial color={0x00ff00} wireframe={!locked} />
     </mesh>
 
   )
 }
+
