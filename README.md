@@ -10,12 +10,12 @@ blocks cannot move out side of a 10 block z-axis range - done
 blocks must fall from a specified height - done
 Blcoks cannot be placed where another exists - done
 once the blocks hit the ground level they cannot be moved - done
-once the blocks hits the top of another block that is placed they cannot be moved
-
-once a block is locked, generate a new one 
+once the blocks hits the top of another block that is placed they cannot be moved - done
+once a block is locked, generate a new one - done
+on a timer the block should move down one by its own accord - done
+assign random colours
 when a line of blocks are made it must be removed
-on a timer the block should move down one by its own accord
 when a line of blocks is removed the score goes up 
+blocks should be different shapes randomly 
 block must be able to rotate, pressing R
-
 There is an upper limit, defined by a linew

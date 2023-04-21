@@ -2,10 +2,13 @@ import { Canvas } from '@react-three/fiber'
 import Box from './Box'
 import { Stats, OrbitControls } from '@react-three/drei'
 import useKeyboard from './usekeyboard'
+import Scoring from './Scoring'
 import { useState } from 'react'
+
 let count = 0
 
 export default function App() {
+
   const keyMap = useKeyboard()
   const pos = [-1.5, 5.5, 0.5]
   const [posStore, setPosStore] = useState([])
@@ -48,11 +51,10 @@ export default function App() {
   }
 
   const updateBlockInPlay = (newState) => {
-    console.log(newState)
+    console.log('newState', newState)
     setBlockInPlay(newState)
     if (!blockInPlay) {
-      console.log('create a new block')
-      if (count < 1) {
+      if (count < 2) {
         createNewBox()
         console.log(count)
       }
@@ -69,7 +71,8 @@ export default function App() {
           checkValidMove={checkValidMove}
           updatePosState={updatePosState}
           keyMap={keyMap}
-          updateBlockInPlay={updateBlockInPlay} />
+          updateBlockInPlay={updateBlockInPlay}
+           />
       ))}
       <OrbitControls maxPolarAngle={Math.PI / 2} />
       <axesHelper args={[5]} />
