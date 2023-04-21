@@ -10,9 +10,15 @@ export default function Box(props) {
   const [movingDown, setMovingDown] = useState(false)
   const [locked, setIsLocked] = useState(false)
 
-
-  // console.log('ref', ref.current)
   useFrame((_, delta) => {
+    // Make the current block always moving twoards the bottom until it hits the plane
+    if (ref.current.position.y > 0.5 && !locked) {
+      ref.current.position.y -= 0.5 * delta;
+      if (ref.current.position.y <= 0.5) {
+        setIsLocked(true)
+        ref.current.position.y = 0.5;
+      }
+    }
     // If its sitting at the bottom of the board, restrict movement
     if (ref.current.position.y === 0.5) {
       setIsLocked(true)
@@ -23,6 +29,7 @@ export default function Box(props) {
       props.updateState(ref.current.uuid, ref.current.position);
 
     }
+    // Moving negatively on x-axis (left)
     if (props.keyMap['KeyA'] && selected && !movingLeft && ref.current.position.x > -4.5 && !locked) {
       let newPosition = { ...ref.current.position }; // create a new object based on the current position
       newPosition.x -= 1; // modify the new object's x property
@@ -36,6 +43,7 @@ export default function Box(props) {
     } else if (!props.keyMap['KeyA'] && movingLeft) {
       setMovingLeft(false)
     }
+    // Moving positively on x-axis (right)
     if (props.keyMap['KeyD'] && selected && !movingRight && ref.current.position.x < 4.5 && !locked) {
       let newPosition = { ...ref.current.position };
       newPosition.x += 1
@@ -48,6 +56,7 @@ export default function Box(props) {
     } else if ((!props.keyMap['KeyD'] && movingRight)) {
       setMovingRight(false)
     }
+    // Moving negatively on y-axis (down)
     if (props.keyMap['KeyS'] && selected && !movingDown && ref.current.position.y > 0.5 && !locked) {
       let newPosition = { ...ref.current.position };
       newPosition.y -= 1

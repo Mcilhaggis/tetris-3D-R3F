@@ -8,8 +8,10 @@ WASD keys to move left right or down, spacebar to place definititevely down - do
 blocks cannot go below the base - done
 blocks cannot move out side of a 10 block z-axis range - done
 blocks must fall from a specified height - done
+Blcoks cannot be placed where another exists - done
 once the blocks hit the ground level they cannot be moved - done
-once the blocks hit another block that is placed they  cannot be moved
+once the blocks hits the top of another block that is placed they cannot be moved - done
+
 when a line of blocks are made it must be removed
 on a timer the block should move down one by its own accord
 when a line of blocks is removed the score goes up 

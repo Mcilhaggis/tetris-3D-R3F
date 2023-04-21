@@ -10,7 +10,6 @@ export default function App() {
   const [posStore, setPosStore] = useState([])
 
   const checkValidMove = (newStateID, newState) => {
-    console.log(posStore, newStateID)
     const existingItem = posStore.find(item => item.id !== newStateID && item.x === newState.x && item.y === newState.y);
     if (existingItem) {
       console.log('Error: block already exists with the same x and y values');
@@ -37,10 +36,9 @@ export default function App() {
     setPosStore(updateArr)
     return true;
   }
-  console.log('posStore', posStore)
   return (
     <Canvas camera={{ position: [3, 6, 8] }} >
-      {[...Array(4)].map((x, index) => (
+      {[...Array(1)].map((x, index) => (
         <Box position={[pos[0] + index, pos[1], pos[2]]} checkValidMove={checkValidMove} updateState={updateState} key={index} keyMap={keyMap} />
       ))}
       <OrbitControls maxPolarAngle={Math.PI / 2} />
