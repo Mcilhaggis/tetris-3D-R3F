@@ -20,33 +20,46 @@ export default function Box(props) {
     // If space bar pressed, send all the way down.
     if (props.keyMap['Space'] && selected) {
       ref.current.position.y = 0.5
-     props.updateState(ref.current.uuid, ref.current.position);
+      props.updateState(ref.current.uuid, ref.current.position);
 
     }
     if (props.keyMap['KeyA'] && selected && !movingLeft && ref.current.position.x > -4.5 && !locked) {
-      props.updateState(ref.current.uuid, ref.current.position);
-  
+      let newPosition = { ...ref.current.position }; // create a new object based on the current position
+      newPosition.x -= 1; // modify the new object's x property
+      let validMove = props.checkValidMove(ref.current.uuid, newPosition); //to check if its moving to an empty space
+      if (validMove) {
         ref.current.position.x -= 1
+        props.updateState(ref.current.uuid, ref.current.position);
         setMovingLeft(true)
-    
+      } else return
+
     } else if (!props.keyMap['KeyA'] && movingLeft) {
       setMovingLeft(false)
     }
     if (props.keyMap['KeyD'] && selected && !movingRight && ref.current.position.x < 4.5 && !locked) {
-
-      ref.current.position.x += 1
-      setMovingRight(true)
-      props.updateState(ref.current.uuid, ref.current.position);
-
+      let newPosition = { ...ref.current.position };
+      newPosition.x += 1
+      let validMove = props.checkValidMove(ref.current.uuid, newPosition);
+      if (validMove) {
+        ref.current.position.x += 1
+        props.updateState(ref.current.uuid, ref.current.position);
+        setMovingRight(true)
+      } else return
     } else if ((!props.keyMap['KeyD'] && movingRight)) {
       setMovingRight(false)
     }
     if (props.keyMap['KeyS'] && selected && !movingDown && ref.current.position.y > 0.5 && !locked) {
-
-      ref.current.position.y -= 1
-      setMovingDown(true)
-      props.updateState(ref.current.uuid, ref.current.position);
-      // props.updatePosStore(ref.current.position)
+      let newPosition = { ...ref.current.position };
+      newPosition.y -= 1
+      let validMove = props.checkValidMove(ref.current.uuid, newPosition);
+      if (validMove) {
+        ref.current.position.y -= 1
+        props.updateState(ref.current.uuid, ref.current.position);
+        setMovingDown(true)
+      } else {
+        setIsLocked(true)
+        return
+      }
     } else if ((!props.keyMap['KeyS'] && movingDown)) {
       setMovingDown(false)
     }
