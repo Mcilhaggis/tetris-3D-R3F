@@ -3,12 +3,15 @@ import Box from './Box'
 import { Stats, OrbitControls } from '@react-three/drei'
 import useKeyboard from './usekeyboard'
 import { useState } from 'react'
+let count = 0
 
 export default function App() {
   const keyMap = useKeyboard()
   const pos = [-1.5, 5.5, 0.5]
   const [posStore, setPosStore] = useState([])
+  const [boxes, setBoxes] = useState([{ id: 0, position: [pos[0], pos[1], pos[2]] }])
   const [blockInPlay, setBlockInPlay] = useState(false)
+  const [indexCount, setIndexCount] = useState(0)
 
   const checkValidMove = (newStateID, newState) => {
     const existingItem = posStore.find(item => item.id !== newStateID && item.x === newState.x && item.y === newState.y);
@@ -38,17 +41,31 @@ export default function App() {
     return true;
   }
 
+  const createNewBox = () => {
+    const newBoxID = boxes.length
+    const newBoxPosition = [pos[0] + newBoxID, pos[1], pos[2]]
+    setBoxes([...boxes, { id: newBoxID, position: newBoxPosition }])
+  }
+
   const updateBlockInPlay = (newState) => {
     console.log(newState)
     setBlockInPlay(newState)
+    if (!blockInPlay) {
+      console.log('create a new block')
+      if (count < 1) {
+        createNewBox()
+        console.log(count)
+      }
+      count += 1
+    }
   }
 
   return (
     <Canvas camera={{ position: [3, 6, 8] }} >
-      {[...Array(1)].map((x, index) => (
+      {!blockInPlay && boxes.map(box => (
         <Box
-          key={index}
-          position={[pos[0] + index, pos[1], pos[2]]}
+          key={box.id}
+          position={[pos[0] + indexCount, pos[1], pos[2]]}
           checkValidMove={checkValidMove}
           updatePosState={updatePosState}
           keyMap={keyMap}

@@ -10,7 +10,7 @@ blocks cannot move out side of a 10 block z-axis range - done
 blocks must fall from a specified height - done
 Blcoks cannot be placed where another exists - done
 once the blocks hit the ground level they cannot be moved - done
-once the blocks hits the top of another block that is placed they cannot be moved - done
+once the blocks hits the top of another block that is placed they cannot be moved
 
 once a block is locked, generate a new one 
 when a line of blocks are made it must be removed

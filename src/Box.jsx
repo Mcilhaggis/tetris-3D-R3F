@@ -1,7 +1,6 @@
 import { useRef, useState, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 
-
 export default function Box(props) {
   const ref = useRef()
 
@@ -12,23 +11,46 @@ export default function Box(props) {
   const [locked, setIsLocked] = useState(false)
   const [count, setCount] = useState(0)
 
+
   const moveDown = () => {
     if (ref.current.position.y > 0.5 && !locked) {
-      ref.current.position.y -= 0.5;
-      if (ref.current.position.y <= 0.5) {
-        setIsLocked(true);
-        ref.current.position.y = 0.5;
+      let newPosition = { ...ref.current.position };
+
+      newPosition.y -= 1
+      console.log('locked', locked, 'ref.current.uuid', ref.current.uuid)
+      if (!locked) {
+        let validMove = props.checkValidMove(ref.current.uuid, newPosition);
+
+        if (validMove) {
+          ref.current.position.y -= 1;
+          props.updatePosState(ref.current.uuid, ref.current.position);
+        } else {
+          setIsLocked(true)
+          console.log('locked1', locked)
+
+          return
+        }
+        if (ref.current.position.y <= 0.5) {
+          ref.current.position.y = 0.5;
+          setIsLocked(true);
+          props.updatePosState(ref.current.uuid, ref.current.position);
+
+        }
+        setCount((count) => count + 1);
       }
-      setCount((count) => count + 1);
+
     }
   }
 
   useEffect(() => {
     const timer = setInterval(() => {
-      moveDown();
+      if (!locked) {
+        moveDown();
+      }
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
+
+  }, [locked]);
 
 
   useFrame((_, delta) => {
@@ -92,11 +114,12 @@ export default function Box(props) {
     }
   })
 
-  // useEffect(() => {
-  //   if (locked) {
-  //     props.updateBlockInPlay(false)
-  //   }
-  // }, [locked])
+  useEffect(() => {
+    if (locked) {
+      console.log(locked)
+      props.updateBlockInPlay(false)
+    }
+  }, [locked])
 
   return (
     <mesh ref={ref} {...props}>
