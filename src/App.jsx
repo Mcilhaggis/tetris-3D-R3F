@@ -9,32 +9,33 @@ export default function App() {
   const pos = [-1.5, 5.5, 0.5]
   const [posStore, setPosStore] = useState([])
 
-  const removePreviousPos = (newStateID) => {
-    let updatedArray = posStore.filter((item) => item.id !== newStateID)
-    setPosStore(updatedArray)
+  const updateState = (newStateID, newState) => {
+    console.log('posStore', posStore)
+    const existingItem = posStore.find(item => item.id !== newStateID && item.x === newState.x && item.y === newState.y);
+    if (existingItem) {
+      console.log('Error: block already exists with the same x and y values');
+      // return false;
     }
-  
 
-
-  function checkExistance(newPosition) {
-    console.log(posStore)
-    if (posStore.find(item => item.x === newPosition.x && item.y === newPosition.y && item.y === newPosition.y)) {
-      console.log('match found')
-      return true;
+    const updateArr = posStore.map(item => {
+      if (item.id === newStateID) {
+        return {
+          ...item,
+          x: newState.x,
+          y: newState.y
+        }
+      } else {
+        return item;
+      }
+    })
+    const newItem = { id: newStateID, x: newState.x, y: newState.y, z: newState.z };
+    if (!updateArr.some(item => item.id === newStateID)) {
+      updateArr.push(newItem);
     }
+    setPosStore(updateArr)
   }
 
-  const updateState = (newStateID, newState) => {
-    let objPos = { id: newStateID, x: newState.x, y: newState.y, z: newState.z };
-    removePreviousPos(newStateID)
-    if (checkExistance(objPos)) {d
-      console.log('stop movement')
-    } else {
-      console.log('store it')
-      setPosStore((prevState) => [...prevState, objPos]);
-    }
-  };
-
+  console.log('posStore', posStore)
   return (
     <Canvas camera={{ position: [3, 6, 8] }} >
       {[...Array(4)].map((x, index) => (
