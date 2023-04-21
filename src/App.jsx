@@ -7,24 +7,31 @@ import { useState } from 'react'
 export default function App() {
   const keyMap = useKeyboard()
   const pos = [-1.5, 5.5, 0.5]
-  const [posStore, setPostStore] = useState([])
+  const [posStore, setPosStore] = useState([])
+
+  const removePreviousPos = (newStateID) => {
+    let updatedArray = posStore.filter((item) => item.id !== newStateID)
+    setPosStore(updatedArray)
+    }
+  
+
 
   function checkExistance(newPosition) {
+    console.log(posStore)
     if (posStore.find(item => item.x === newPosition.x && item.y === newPosition.y && item.y === newPosition.y)) {
       console.log('match found')
       return true;
     }
   }
 
-  const updateState = (newState) => {
-    let objPos = { x: newState.x, y: newState.y, z: newState.z };
-
-    console.log(newState)
-    if (checkExistance(objPos)) {
+  const updateState = (newStateID, newState) => {
+    let objPos = { id: newStateID, x: newState.x, y: newState.y, z: newState.z };
+    removePreviousPos(newStateID)
+    if (checkExistance(objPos)) {d
       console.log('stop movement')
     } else {
       console.log('store it')
-      setPostStore((prevState) => [...prevState, objPos]);
+      setPosStore((prevState) => [...prevState, objPos]);
     }
   };
 

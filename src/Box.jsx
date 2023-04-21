@@ -9,7 +9,8 @@ export default function Box(props) {
   const [movingRight, setMovingRight] = useState(false)
   const [movingDown, setMovingDown] = useState(false)
   const [locked, setIsLocked] = useState(false)
-  console.log(props)
+
+  // console.log('ref', ref.current)
   useFrame((_, delta) => {
     // If its sitting at the bottom of the board, restrict movement
     if (ref.current.position.y === 0.5) {
@@ -18,11 +19,13 @@ export default function Box(props) {
     // If space bar pressed, send all the way down.
     if (props.keyMap['Space'] && selected) {
       ref.current.position.y = 0.5
+      props.updateState(ref.current.uuid, ref.current.position);
+
     }
     if (props.keyMap['KeyA'] && selected && !movingLeft && ref.current.position.x > -4.5 && !locked) {
       ref.current.position.x -= 1
       setMovingLeft(true)
-      props.updateState(ref.current.position);
+      props.updateState(ref.current.uuid, ref.current.position);
 
     } else if (!props.keyMap['KeyA'] && movingLeft) {
       setMovingLeft(false)
@@ -30,7 +33,7 @@ export default function Box(props) {
     if (props.keyMap['KeyD'] && selected && !movingRight && ref.current.position.x < 4.5 && !locked) {
       ref.current.position.x += 1
       setMovingRight(true)
-      props.updateState(ref.current.position);
+      props.updateState(ref.current.uuid, ref.current.position);
 
     } else if ((!props.keyMap['KeyD'] && movingRight)) {
       setMovingRight(false)
@@ -38,7 +41,7 @@ export default function Box(props) {
     if (props.keyMap['KeyS'] && selected && !movingDown && ref.current.position.y > 0.5 && !locked) {
       ref.current.position.y -= 1
       setMovingDown(true)
-      props.updateState(ref.current.position);
+      props.updateState(ref.current.uuid, ref.current.position);
       // props.updatePosStore(ref.current.position)
     } else if ((!props.keyMap['KeyS'] && movingDown)) {
       setMovingDown(false)
