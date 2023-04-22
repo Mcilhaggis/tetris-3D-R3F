@@ -13,7 +13,7 @@ export default function Box(props) {
   const [count, setCount] = useState(0)
   const [color, setColor] = useState(new Color(Math.floor(Math.random() * 16777216)));
 
-  
+
 
   const moveDown = () => {
     if (ref.current.position.y > 0.5 && !locked) {
@@ -26,6 +26,8 @@ export default function Box(props) {
           props.updatePosState(ref.current.uuid, ref.current.position);
         } else {
           setIsLocked(true)
+          props.updatePosState(ref.current.uuid, ref.current.position);
+
           return
         }
         if (ref.current.position.y <= 0.5) {
@@ -113,8 +115,8 @@ export default function Box(props) {
 
   useEffect(() => {
     if (locked) {
-      console.log(locked)
       props.updateBlockInPlay(false)
+      props.updateLockedState(ref.current.uuid, locked)
     }
   }, [locked])
 
