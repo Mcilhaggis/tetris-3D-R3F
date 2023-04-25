@@ -14,7 +14,6 @@ export default function Box(props) {
   const [color, setColor] = useState(new Color(Math.floor(Math.random() * 16777216)));
 
 
-
   const moveDown = () => {
     if (ref.current.position.y > 0.5 && !locked) {
       let newPosition = { ...ref.current.position };
@@ -23,17 +22,17 @@ export default function Box(props) {
         let validMove = props.checkValidMove(ref.current.uuid, newPosition);
         if (validMove) {
           ref.current.position.y -= 1;
-          props.updatePosState(ref.current.uuid, ref.current.position);
+          props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uniqueID);
         } else {
           setIsLocked(true)
-          props.updatePosState(ref.current.uuid, ref.current.position);
+          props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uniqueID);
 
           return
         }
         if (ref.current.position.y <= 0.5) {
           ref.current.position.y = 0.5;
           setIsLocked(true);
-          props.updatePosState(ref.current.uuid, ref.current.position);
+          props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uniqueID);
         }
         setCount((count) => count + 1);
       }
@@ -65,7 +64,7 @@ export default function Box(props) {
     // If space bar pressed, send all the way down.
     if (props.keyMap['Space'] && selected) {
       ref.current.position.y = 0.5
-      props.updatePosState(ref.current.uuid, ref.current.position);
+      props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uniqueID);
 
     }
     // Moving negatively on x-axis (left)
@@ -75,7 +74,7 @@ export default function Box(props) {
       let validMove = props.checkValidMove(ref.current.uuid, newPosition); //to check if its moving to an empty space
       if (validMove) {
         ref.current.position.x -= 1
-        props.updatePosState(ref.current.uuid, ref.current.position);
+        props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uniqueID);
         setMovingLeft(true)
       } else return
 
@@ -89,7 +88,7 @@ export default function Box(props) {
       let validMove = props.checkValidMove(ref.current.uuid, newPosition);
       if (validMove) {
         ref.current.position.x += 1
-        props.updatePosState(ref.current.uuid, ref.current.position);
+        props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uniqueID);
         setMovingRight(true)
       } else return
     } else if ((!props.keyMap['KeyD'] && movingRight)) {
@@ -102,7 +101,7 @@ export default function Box(props) {
       let validMove = props.checkValidMove(ref.current.uuid, newPosition);
       if (validMove) {
         ref.current.position.y -= 1
-        props.updatePosState(ref.current.uuid, ref.current.position);
+        props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uniqueID);
         setMovingDown(true)
       } else {
         setIsLocked(true)
