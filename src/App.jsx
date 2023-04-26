@@ -45,45 +45,50 @@ export default function App() {
       x: newState.x,
       y: newState.y,
       z: newState.z,
-      // locked: newState.locked 
     };
 
     if (!updateArr.some(item => item.id === newStateID)) {
       updateArr.push(newItem);
     }
-
     setPosStore(updateArr)
-
-    // Count how many repeated values there are 
-    let counter = updateArr.reduce((acc, obj) => {
-      const value = obj.y;
-      acc[value] = (acc[value] || 0) + 1;
-      return acc;
-    }, {})
-
-    // If there is more than 5 it a complete line
-    for (const value in counter) {
-      if (counter[value] >= 5) {
-        console.log(`${value} is repeated ${counter[value]} times.`);
-        setCompleteLine(true)
-        setCompleteLineYValue(value)
-      }
-    }
     return true;
   }
 
   useEffect(() => {
+    if (posStore.length > 0) {
+      // Count how many repeated values there are 
+      let counter = posStore.reduce((acc, obj) => {
+        const value = obj.y;
+        acc[value] = (acc[value] || 0) + 1;
+        return acc;
+      }, {})
+
+      // If there is more than 5 it a complete line
+      for (const value in counter) {
+        if (counter[value] >= 5) {
+          console.log(`${value} is repeated ${counter[value]} times.`);
+          setCompleteLine(true)
+          setCompleteLineYValue(value)
+        }
+      }
+    }
+  }, [posStore])
+
+  useEffect(() => {
     if (completeLine) {
+      console.log('removing the matched items')
       const completeLineRemovalPosStore = posStore.filter(obj => obj.y !== Number(completeLineYValue));
       const idsToRemove = posStore.filter(obj => obj.y === Number(completeLineYValue));
       setPosStore(completeLineRemovalPosStore)
-  
+
       const filteredBoxes = boxes.filter((item2) => {
         const foundItem1 = idsToRemove.find((item1) => item1.uniqueID === item2.id);
         return !foundItem1; // only keep items not found in arr1
       });
 
-      setBoxes(filteredBoxes)
+      if (JSON.stringify(filteredBoxes) !== JSON.stringify(boxes)) {
+        setBoxes(filteredBoxes);
+      }
       setCompleteLine(false)
     }
   }, [completeLine])
@@ -104,15 +109,17 @@ export default function App() {
   }
 
   const createNewBox = () => {
+    console.log('make new box')
     const newBoxID = boxes.length
     const newBoxPosition = [pos[0] + newBoxID, pos[1], pos[2]]
     setBoxes([...boxes, { id: newBoxID, uniqueID: null, position: newBoxPosition, locked: false }])
   }
 
   const updateBlockInPlay = (newState) => {
+    console.log('hit', blockInPlay)
     setBlockInPlay(newState)
     if (!blockInPlay) {
-      if (count < 5) {
+      if (count < 6) {
         createNewBox()
       }
       count += 1
