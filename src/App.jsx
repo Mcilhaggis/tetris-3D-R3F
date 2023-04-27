@@ -11,7 +11,7 @@ export default function App() {
   const keyMap = useKeyboard()
   const pos = [0.5, 5.5, 0.5]
   const [posStore, setPosStore] = useState([])
-  const [boxes, setBoxes] = useState([{ id: 0, uniqueID: null, position: [pos[0], pos[1], pos[2]], locked: false }])
+  const [boxes, setBoxes] = useState([])
   const [blockInPlay, setBlockInPlay] = useState(false)
   const [indexCount, setIndexCount] = useState(0)
   const [completeLine, setCompleteLine] = useState(false)
@@ -53,11 +53,11 @@ export default function App() {
     setPosStore(updateArr)
     return true;
   }
-
   useEffect(() => {
+    let counter;
     if (posStore.length > 0) {
       // Count how many repeated values there are 
-      let counter = posStore.reduce((acc, obj) => {
+      counter = posStore.reduce((acc, obj) => {
         const value = obj.y;
         acc[value] = (acc[value] || 0) + 1;
         return acc;
@@ -65,18 +65,20 @@ export default function App() {
 
       // If there is more than 5 it a complete line
       for (const value in counter) {
-        if (counter[value] >= 5) {
+        if (counter[value] === 5) {
           console.log(`${value} is repeated ${counter[value]} times.`);
           setCompleteLine(true)
           setCompleteLineYValue(value)
+          counter[value] = 0
         }
       }
+    } else {
+      updateBlockInPlay(false)
     }
   }, [posStore])
 
   useEffect(() => {
     if (completeLine) {
-      console.log('removing the matched items')
       const completeLineRemovalPosStore = posStore.filter(obj => obj.y !== Number(completeLineYValue));
       const idsToRemove = posStore.filter(obj => obj.y === Number(completeLineYValue));
       setPosStore(completeLineRemovalPosStore)
@@ -95,6 +97,7 @@ export default function App() {
 
 
   const updateLockedState = (objID, locked) => {
+
     const updateArr = posStore.map(item => {
       if (item.id === objID) {
         return {
@@ -109,22 +112,23 @@ export default function App() {
   }
 
   const createNewBox = () => {
-    console.log('make new box')
     const newBoxID = boxes.length
     const newBoxPosition = [pos[0] + newBoxID, pos[1], pos[2]]
-    setBoxes([...boxes, { id: newBoxID, uniqueID: null, position: newBoxPosition, locked: false }])
+    setBoxes(
+      [...boxes, 
+      { id: newBoxID, uniqueID: null, x: newBoxPosition[0] + newBoxID, y: pos[1], z: pos[2], locked: false }])
   }
 
   const updateBlockInPlay = (newState) => {
-    console.log('hit', blockInPlay)
     setBlockInPlay(newState)
-    if (!blockInPlay) {
-      if (count < 6) {
+    if (!blockInPlay && !completeLine) {
+      if (count < 7) {
         createNewBox()
       }
       count += 1
     }
   }
+
 
   return (
     <Canvas camera={{ position: [3, 6, 8] }} >
