@@ -4,7 +4,7 @@ import { Stats, OrbitControls } from '@react-three/drei'
 import useKeyboard from './usekeyboard'
 import { useEffect, useState } from 'react'
 
-let count = 0
+// let count = 0
 
 export default function App() {
 
@@ -13,7 +13,7 @@ export default function App() {
   const [posStore, setPosStore] = useState([])
   const [boxes, setBoxes] = useState([])
   const [blockInPlay, setBlockInPlay] = useState(false)
-  const [indexCount, setIndexCount] = useState(0)
+  const [count, setCount] = useState(0)
   const [completeLine, setCompleteLine] = useState(false)
   const [completeLineYValue, setCompleteLineYValue] = useState(null)
 
@@ -55,6 +55,8 @@ export default function App() {
   }
   useEffect(() => {
     let counter;
+    console.log('posStorebefore legnth checks', posStore)
+
     if (posStore.length > 0) {
       // Count how many repeated values there are 
       counter = posStore.reduce((acc, obj) => {
@@ -67,7 +69,7 @@ export default function App() {
       // If there is more than 5 it a complete line
       for (const value in counter) {
         if (counter[value] === 5) {
-          console.log(`${value} is repeated ${counter[value]} times.`);
+          console.log(`${value} is repeated ${counter[value]} times. Removing the line.`);
           setCompleteLine(true)
           setCompleteLineYValue(value)
           counter[value] = 0
@@ -80,34 +82,29 @@ export default function App() {
 
   useEffect(() => {
     if (completeLine) {
-      const completeLineRemovalPosStore = posStore.filter(obj => obj.y !== Number(completeLineYValue));
+      const lineRemovalPosStore = posStore.filter(obj => obj.y !== Number(completeLineYValue));
+      
+      const updatedPosStore = lineRemovalPosStore.map(item => ({
+        ...item,
+        y: item.y - 1
+      }));
+      setPosStore(updatedPosStore)
+      
       const idsToRemove = posStore.filter(obj => obj.y === Number(completeLineYValue));
-
-      for (var i = 0; i < completeLineRemovalPosStore.length; i++) {
-        completeLineRemovalPosStore[i].y = completeLineRemovalPosStore[i].y - 1
-        console.log(completeLineRemovalPosStore[i].y)
-      }
-      console.log(completeLineRemovalPosStore)
-      setPosStore(completeLineRemovalPosStore)
-
       const filteredBoxes = boxes.filter((item2) => {
-        const foundItem1 = idsToRemove.find((item1) => item1.uniqueID === item2.id - 1);
+        const foundItem1 = idsToRemove.find((item1) => item1.uniqueID -1 === item2.id);
         return !foundItem1; // only keep items that don't have the matching y value
       });
 
       if (JSON.stringify(filteredBoxes) !== JSON.stringify(boxes)) {
-        console.log('filteredBoxes', filteredBoxes)
         setBoxes(filteredBoxes);
       }
-
-
       setCompleteLine(false)
     }
   }, [completeLine])
 
 
   const updateLockedState = (objID, locked) => {
-
     const updateArr = posStore.map(item => {
       if (item.id === objID) {
         return {
@@ -126,16 +123,16 @@ export default function App() {
     const newBoxPosition = [pos[0] + newBoxID, pos[1], pos[2]]
     setBoxes(
       [...boxes,
-      { id: count, uniqueID: null, x: newBoxPosition[0], y: pos[1], z: pos[2], locked: false }])
+      { id: count, uniqueID: null, x: pos[0], y: pos[1], z: pos[2], locked: false }])
   }
 
   const updateBlockInPlay = (newState) => {
     setBlockInPlay(newState)
     if (!blockInPlay && !completeLine) {
-      if (count < 7) {
+      if (count < 8) {
         createNewBox()
       }
-      count += 1
+      setCount(count + 1)
     }
   }
 
@@ -145,8 +142,8 @@ export default function App() {
       {!blockInPlay && boxes.map((box, index) => (
         <Box
           key={box.id}
-          uniqueID={index}
-          position={[pos[0] + indexCount, pos[1], pos[2]]}
+          uniqueID={count}
+          position={[pos[0], pos[1], pos[2]]}
           checkValidMove={checkValidMove}
           updatePosState={updatePosState}
           keyMap={keyMap}
