@@ -14,10 +14,9 @@ once the blocks hits the top of another block that is placed they cannot be move
 once a block is locked, generate a new one - done
 on a timer the block should move down one by its own accord - done
 assign random colours - done 
+if the y axis is the same and the blocks are locked and there are more than fivem, remove line - done
+when a line is removed the blocks above it should all move down one row
 
-if the y axis is the same and the blocks are locked and there are more than fivem, remove line
-
-when a line of blocks are made it must be removed
 the place that the block is potioned above shouold illuminate to indicate placement
 the edges of the blocks should be a darker colour
 when a line of blocks is removed the score goes up 

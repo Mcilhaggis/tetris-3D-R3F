@@ -62,7 +62,8 @@ export default function App() {
         acc[value] = (acc[value] || 0) + 1;
         return acc;
       }, {})
-
+      console.log('posStore', posStore)
+      console.log('boxes', boxes)
       // If there is more than 5 it a complete line
       for (const value in counter) {
         if (counter[value] === 5) {
@@ -81,16 +82,25 @@ export default function App() {
     if (completeLine) {
       const completeLineRemovalPosStore = posStore.filter(obj => obj.y !== Number(completeLineYValue));
       const idsToRemove = posStore.filter(obj => obj.y === Number(completeLineYValue));
+
+      for (var i = 0; i < completeLineRemovalPosStore.length; i++) {
+        completeLineRemovalPosStore[i].y = completeLineRemovalPosStore[i].y - 1
+        console.log(completeLineRemovalPosStore[i].y)
+      }
+      console.log(completeLineRemovalPosStore)
       setPosStore(completeLineRemovalPosStore)
 
       const filteredBoxes = boxes.filter((item2) => {
-        const foundItem1 = idsToRemove.find((item1) => item1.uniqueID === item2.id);
-        return !foundItem1; // only keep items not found in arr1
+        const foundItem1 = idsToRemove.find((item1) => item1.uniqueID === item2.id - 1);
+        return !foundItem1; // only keep items that don't have the matching y value
       });
 
       if (JSON.stringify(filteredBoxes) !== JSON.stringify(boxes)) {
+        console.log('filteredBoxes', filteredBoxes)
         setBoxes(filteredBoxes);
       }
+
+
       setCompleteLine(false)
     }
   }, [completeLine])
@@ -115,8 +125,8 @@ export default function App() {
     const newBoxID = boxes.length
     const newBoxPosition = [pos[0] + newBoxID, pos[1], pos[2]]
     setBoxes(
-      [...boxes, 
-      { id: newBoxID, uniqueID: null, x: newBoxPosition[0] + newBoxID, y: pos[1], z: pos[2], locked: false }])
+      [...boxes,
+      { id: count, uniqueID: null, x: newBoxPosition[0], y: pos[1], z: pos[2], locked: false }])
   }
 
   const updateBlockInPlay = (newState) => {
