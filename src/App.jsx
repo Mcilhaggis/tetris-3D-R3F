@@ -2,7 +2,7 @@ import { Canvas } from '@react-three/fiber'
 import Box from './Box'
 import { Stats, OrbitControls } from '@react-three/drei'
 import useKeyboard from './usekeyboard'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
 // let count = 0
 
@@ -16,6 +16,13 @@ export default function App() {
   const [count, setCount] = useState(0)
   const [completeLine, setCompleteLine] = useState(false)
   const [completeLineYValue, setCompleteLineYValue] = useState(null)
+  const previousPosStoreLengthRef = useRef(posStore.length);
+  useEffect(() => {
+    previousPosStoreLengthRef.current = posStore.length;
+  }, [posStore.length]);
+  
+  const previousPosStoreLength = previousPosStoreLengthRef.current;
+
 
   const checkValidMove = (newStateID, newState) => {
     const existingItem = posStore.find(item => item.id !== newStateID && item.x === newState.x && item.y === newState.y);
@@ -53,9 +60,10 @@ export default function App() {
     setPosStore(updateArr)
     return true;
   }
+
+  
   useEffect(() => {
     let counter;
-    console.log('posStorebefore legnth checks', posStore)
 
     if (posStore.length > 0) {
       // Count how many repeated values there are 
@@ -64,8 +72,6 @@ export default function App() {
         acc[value] = (acc[value] || 0) + 1;
         return acc;
       }, {})
-      console.log('posStore', posStore)
-      console.log('boxes', boxes)
       // If there is more than 5 it a complete line
       for (const value in counter) {
         if (counter[value] === 5) {
@@ -149,6 +155,9 @@ export default function App() {
           keyMap={keyMap}
           updateBlockInPlay={updateBlockInPlay}
           updateLockedState={updateLockedState}
+          posStore={posStore}
+          reducedPosStoreLength={posStore.length < previousPosStoreLength} // add this prop
+
         />
       ))}
       <OrbitControls maxPolarAngle={Math.PI / 2} />

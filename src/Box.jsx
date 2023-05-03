@@ -13,6 +13,18 @@ export default function Box(props) {
   const [count, setCount] = useState(0)
   const [color, setColor] = useState(new Color(Math.floor(Math.random() * 16777216)));
 
+  useEffect(() => {
+    if (props.reducedPosStoreLength) {
+      for (var i = 0; i < props.posStore.length; i++) {
+        if (props.posStore[i].id === ref.current.uuid) {
+          ref.current.position.x = props.posStore[i].x
+          ref.current.position.y = props.posStore[i].y
+          ref.current.position.z = props.posStore[i].z
+        }
+      }
+    }
+  }, [props.reducedPosStoreLength]);
+
 
   const moveDown = () => {
     if (ref.current.position.y > 0.5 && !locked) {
