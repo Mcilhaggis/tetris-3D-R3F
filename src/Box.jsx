@@ -20,6 +20,7 @@ export default function Box(props) {
           ref.current.position.x = props.posStore[i].x
           ref.current.position.y = props.posStore[i].y
           ref.current.position.z = props.posStore[i].z
+          props.updateBlockInPlay(false)
         }
       }
     }

@@ -125,8 +125,9 @@ export default function App() {
   }
 
   const createNewBox = () => {
-    const newBoxID = boxes.length
-    const newBoxPosition = [pos[0] + newBoxID, pos[1], pos[2]]
+    // const newBoxID = boxes.length
+    // const newBoxPosition = [pos[0] + newBoxID, pos[1], pos[2]]
+    console.log('make an new boxxx')
     setBoxes(
       [...boxes,
       { id: count, uniqueID: null, x: pos[0], y: pos[1], z: pos[2], locked: false }])
@@ -134,6 +135,7 @@ export default function App() {
 
   const updateBlockInPlay = (newState) => {
     setBlockInPlay(newState)
+    console.log(blockInPlay , completeLine)
     if (!blockInPlay && !completeLine) {
       if (count < 8) {
         createNewBox()
