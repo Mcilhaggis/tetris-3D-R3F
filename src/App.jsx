@@ -1,6 +1,7 @@
 import { Canvas } from '@react-three/fiber'
 import Box from './Box'
 import Scoreboard from './Scoreboard'
+import GameOver from './GameOver'
 import { Stats, OrbitControls } from '@react-three/drei'
 import useKeyboard from './usekeyboard'
 import { useEffect, useState, useRef } from 'react'
@@ -17,11 +18,12 @@ export default function App() {
   const [scoreCount, setScoreCount] = useState(0)
   const [completeLine, setCompleteLine] = useState(false)
   const [completeLineYValue, setCompleteLineYValue] = useState(null)
+  const [gameOver, setGameOver] = useState(false)
   const previousPosStoreLengthRef = useRef(posStore.length);
   useEffect(() => {
     previousPosStoreLengthRef.current = posStore.length;
   }, [posStore.length]);
-  
+
   const previousPosStoreLength = previousPosStoreLengthRef.current;
 
 
@@ -62,24 +64,23 @@ export default function App() {
     return true;
   }
 
-  
+  // Check for a complete line being made
   useEffect(() => {
-    let counter;
-
+    let counterY;
     if (posStore.length > 0) {
       // Count how many repeated values there are 
-      counter = posStore.reduce((acc, obj) => {
+      counterY = posStore.reduce((acc, obj) => {
         const value = obj.y;
         acc[value] = (acc[value] || 0) + 1;
         return acc;
       }, {})
       // If there is more than 5 it a complete line
-      for (const value in counter) {
-        if (counter[value] === 5) {
-          console.log(`${value} is repeated ${counter[value]} times. Removing the line.`);
+      for (const value in counterY) {
+        if (counterY[value] === 5) {
+          console.log(`${value} is repeated ${counterY[value]} times. Removing the line.`);
           setCompleteLine(true)
           setCompleteLineYValue(value)
-          counter[value] = 0
+          counterY[value] = 0
         }
       }
     } else {
@@ -87,26 +88,47 @@ export default function App() {
     }
   }, [posStore])
 
+  // Check for the build getting too tall and causing game to be over
+  useEffect(() => {
+    let counterX;
+    if (posStore.length > 0) {
+      // Count how many repeated values there are 
+      counterX = posStore.reduce((acc, obj) => {
+        const value = obj.x;
+        acc[value] = (acc[value] || 0) + 1;
+        return acc;
+      }, {})
+      // If there is more than 5 it a complete line
+      for (const value in counterX) {
+        if (counterX[value] === 5) {
+          console.log(`${value} is repeated ${counterX[value]} times. GAME OVER.`);
+          setGameOver(true)
+          counterX[value] = 0
+        }
+      }
+    }
+  }, [posStore])
+
+
   useEffect(() => {
     if (completeLine) {
       const lineRemovalPosStore = posStore.filter(obj => obj.y !== Number(completeLineYValue));
-      
       const updatedPosStore = lineRemovalPosStore.map(item => ({
         ...item,
         y: item.y - 1
       }));
       setPosStore(updatedPosStore)
-      
+
       const idsToRemove = posStore.filter(obj => obj.y === Number(completeLineYValue));
       const filteredBoxes = boxes.filter((item2) => {
-        const foundItem1 = idsToRemove.find((item1) => item1.uniqueID -1 === item2.id);
+        const foundItem1 = idsToRemove.find((item1) => item1.uniqueID - 1 === item2.id);
         return !foundItem1; // only keep items that don't have the matching y value
       });
 
       if (JSON.stringify(filteredBoxes) !== JSON.stringify(boxes)) {
         setBoxes(filteredBoxes);
       }
-      setScoreCount(scoreCount + 1 )
+      setScoreCount(scoreCount + 1)
       setCompleteLine(false)
     }
   }, [completeLine])
@@ -134,18 +156,32 @@ export default function App() {
 
   const updateBlockInPlay = (newState) => {
     setBlockInPlay(newState)
-    if (!blockInPlay && !completeLine) {
-      if (count < 8) {
+    if (!blockInPlay && !completeLine && !gameOver) {
+      if (count < 15) {
         createNewBox()
       }
       setCount(count + 1)
     }
   }
 
+  const handleReset = () => {
+    console.log('hit')
+    updateBlockInPlay(false)
+    setPosStore([])
+    setBoxes([])
+    setGameOver(false)
+    setScoreCount(0)
+  }
 
   return (
     <Canvas camera={{ position: [3, 6, 8] }} >
-      <Scoreboard score={scoreCount}/>
+      {!gameOver && <Scoreboard
+        score={scoreCount}
+      />
+      }
+      {gameOver && <GameOver score={scoreCount}         handleReset={handleReset}
+/>}
+      
       {!blockInPlay && boxes.map((box, index) => (
         <Box
           key={box.id}
@@ -163,6 +199,7 @@ export default function App() {
       ))}
       <OrbitControls maxPolarAngle={Math.PI / 2} />
       <axesHelper args={[5]} />
+      <gridHelper position={[0, 5, 0]} color={'#ff0000'} opacity={0.5} />
       <gridHelper />
       <Stats />
 

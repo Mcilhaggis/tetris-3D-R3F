@@ -28,14 +28,34 @@ body,
   padding: 10px 15px;
   border-radius: 5px;
   user-select: none;
-  font-family: var(--leva-fonts-mono);
-
-}
-.annotation h1{
-font-size: 18px;
+  font-family: var(--leva-fonts-mono)
 }
 
-.annotation::before {
+.annotation h1 {
+  font-size: 18px;
+}
+
+.gameover-overlay {
+  transform: translate3d(calc(-50%), calc(-50%), 0);
+  text-align: center;
+  justify-content: center;
+  height: 350px;
+  width: 350px;
+  background: #79cfd8;
+  opacity: 0.8;
+  color: #000000;
+  padding: 10px 15px;
+  border-radius: 5px;
+  user-select: none;
+  font-family: var(--leva-fonts-mono)
+}
+
+.gameover-overlay h1 {
+  font-size: 30px;
+}
+
+
+/* .annotation::before {
   content: '';
   position: absolute;
   top: 20px;
@@ -43,4 +63,4 @@ font-size: 18px;
   height: 2px;
   width: 30px;
   background: #181c20;
-}
+} */
