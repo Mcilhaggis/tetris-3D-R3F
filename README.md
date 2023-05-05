@@ -15,11 +15,16 @@ once a block is locked, generate a new one - done
 on a timer the block should move down one by its own accord - done
 assign random colours - done 
 if the y axis is the same and the blocks are locked and there are more than fivem, remove line - done
-when a line is removed the blocks above it should all move down one row
+when a line is removed the blocks above it should all move down one row - done 
 
 the place that the block is potioned above shouold illuminate to indicate placement
 the edges of the blocks should be a darker colour
 when a line of blocks is removed the score goes up 
 blocks should be different shapes randomly 
 block must be able to rotate, pressing R
-There is an upper limit, defined by a linew
+There is an upper limit, defined by a visual line
+when the line is met it's game over
+add a pause feature
+
+bugs
+the space bar press to send to the bottom doesn't work 

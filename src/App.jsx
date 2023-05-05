@@ -1,9 +1,9 @@
 import { Canvas } from '@react-three/fiber'
 import Box from './Box'
+import Scoreboard from './Scoreboard'
 import { Stats, OrbitControls } from '@react-three/drei'
 import useKeyboard from './usekeyboard'
 import { useEffect, useState, useRef } from 'react'
-
 // let count = 0
 
 export default function App() {
@@ -14,6 +14,7 @@ export default function App() {
   const [boxes, setBoxes] = useState([])
   const [blockInPlay, setBlockInPlay] = useState(false)
   const [count, setCount] = useState(0)
+  const [scoreCount, setScoreCount] = useState(0)
   const [completeLine, setCompleteLine] = useState(false)
   const [completeLineYValue, setCompleteLineYValue] = useState(null)
   const previousPosStoreLengthRef = useRef(posStore.length);
@@ -105,6 +106,7 @@ export default function App() {
       if (JSON.stringify(filteredBoxes) !== JSON.stringify(boxes)) {
         setBoxes(filteredBoxes);
       }
+      setScoreCount(scoreCount + 1 )
       setCompleteLine(false)
     }
   }, [completeLine])
@@ -125,9 +127,6 @@ export default function App() {
   }
 
   const createNewBox = () => {
-    // const newBoxID = boxes.length
-    // const newBoxPosition = [pos[0] + newBoxID, pos[1], pos[2]]
-    console.log('make an new boxxx')
     setBoxes(
       [...boxes,
       { id: count, uniqueID: null, x: pos[0], y: pos[1], z: pos[2], locked: false }])
@@ -135,7 +134,6 @@ export default function App() {
 
   const updateBlockInPlay = (newState) => {
     setBlockInPlay(newState)
-    console.log(blockInPlay , completeLine)
     if (!blockInPlay && !completeLine) {
       if (count < 8) {
         createNewBox()
@@ -147,6 +145,7 @@ export default function App() {
 
   return (
     <Canvas camera={{ position: [3, 6, 8] }} >
+      <Scoreboard score={scoreCount}/>
       {!blockInPlay && boxes.map((box, index) => (
         <Box
           key={box.id}

@@ -23,12 +23,16 @@ body,
 .annotation {
   transform: translate3d(calc(50%), calc(-50%), 0);
   text-align: left;
-  background: #181c20;
-  color: #8c92a4;
+  background: #f9eea3;
+  color: #000000;
   padding: 10px 15px;
   border-radius: 5px;
   user-select: none;
   font-family: var(--leva-fonts-mono);
+
+}
+.annotation h1{
+font-size: 18px;
 }
 
 .annotation::before {
