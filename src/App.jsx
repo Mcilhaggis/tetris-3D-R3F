@@ -76,7 +76,7 @@ export default function App() {
       }, {})
       // If there is more than 5 it a complete line
       for (const value in counterY) {
-        if (counterY[value] === 5) {
+        if (counterY[value] === 10) {
           console.log(`${value} is repeated ${counterY[value]} times. Removing the line.`);
           setCompleteLine(true)
           setCompleteLineYValue(value)
@@ -132,6 +132,7 @@ export default function App() {
       setCompleteLine(false)
     }
   }, [completeLine])
+
 
 
   const updateLockedState = (objID, locked) => {
