@@ -157,7 +157,7 @@ export default function App() {
   const updateBlockInPlay = (newState) => {
     setBlockInPlay(newState)
     if (!blockInPlay && !completeLine && !gameOver) {
-      if (count < 15) {
+      if (!gameOver) {
         createNewBox()
       }
       setCount(count + 1)
@@ -171,6 +171,7 @@ export default function App() {
     setBoxes([])
     setGameOver(false)
     setScoreCount(0)
+    setCount(0)
   }
 
   return (
@@ -197,9 +198,11 @@ export default function App() {
 
         />
       ))}
-      <OrbitControls maxPolarAngle={Math.PI / 2} />
+      <OrbitControls maxPolarAngle={Math.PI / 2} 
+      // autoRotate={gameOver ? true : false} 
+      />
       <axesHelper args={[5]} />
-      <gridHelper position={[0, 5, 0]} color={'#ff0000'} opacity={0.5} />
+      <gridHelper position={[0, 5, 0]} color="hotpink"  />
       <gridHelper />
       <Stats />
 

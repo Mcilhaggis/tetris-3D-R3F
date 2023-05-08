@@ -6,8 +6,7 @@ export default function Scoreboard({score}) {
         <>
             <Html position={[4, 5, -2]} >
                 <div className='annotation'>
-                    <h1>3D TETRIS</h1>
-                    <p>Score: {score}</p>
+                    <h1>Score: {score}</h1>
                     {/* <p>Level: {props.level}</p> */}
                     </div>
             </Html>

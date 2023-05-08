@@ -12,7 +12,7 @@ export default function Box(props) {
   const [locked, setIsLocked] = useState(false)
   const [count, setCount] = useState(0)
   const [color, setColor] = useState(new Color(Math.floor(Math.random() * 16777216)));
-
+console.log(count, setColor, setSelected)
   useEffect(() => {
     if (props.reducedPosStoreLength) {
       for (var i = 0; i < props.posStore.length; i++) {

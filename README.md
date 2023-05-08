@@ -17,13 +17,13 @@ assign random colours - done
 if the y axis is the same and the blocks are locked and there are more than fivem, remove line - done
 when a line is removed the blocks above it should all move down one row - done 
 when a line of blocks is removed the score goes up - done
+when the line is met it's game over and an overlay appears with a replay button - done
+when the replay button is clicked the score goes to zero and the blocks start to fall - done
 
-when the line is met it's game over and an overlay appears with a replay button - in progress
-when the replay button is clicked the score goes to zero and the blocks start to fall - in progress
+if there is a gap on the line, as in the y axis x axis values are not consistently incremented or decremented by one then it's not a complete line 
 
 TO DO:
 the place that the block is potioned above shouold illuminate to indicate placement
-if there is a gap on the line, as in the y axis x axis values are not consistently incremented or decremented by one then it's not a complete line 
 the edges of the blocks should be a darker colour
 blocks should be different shapes randomly 
 block must be able to rotate, pressing R
