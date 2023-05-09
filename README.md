@@ -20,8 +20,6 @@ when a line of blocks is removed the score goes up - done
 when the line is met it's game over and an overlay appears with a replay button - done
 when the replay button is clicked the score goes to zero and the blocks start to fall - done
 
-if there is a gap on the line, as in the y axis x axis values are not consistently incremented or decremented by one then it's not a complete line 
-
 TO DO:
 the place that the block is potioned above shouold illuminate to indicate placement
 the edges of the blocks should be a darker colour

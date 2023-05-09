@@ -20,6 +20,10 @@ export default function App() {
   const [completeLineYValue, setCompleteLineYValue] = useState(null)
   const [gameOver, setGameOver] = useState(false)
   const previousPosStoreLengthRef = useRef(posStore.length);
+  const [cameraPosition, setCameraPosition] = useState([3, 6, 8]);
+
+  const orbitControlsRef = useRef()
+
   useEffect(() => {
     previousPosStoreLengthRef.current = posStore.length;
   }, [posStore.length]);
@@ -166,25 +170,26 @@ export default function App() {
   }
 
   const handleReset = () => {
-    console.log('hit')
     updateBlockInPlay(false)
     setPosStore([])
     setBoxes([])
     setGameOver(false)
     setScoreCount(0)
     setCount(0)
+    orbitControlsRef.current.reset()
   }
 
   return (
-    <Canvas camera={{ position: [3, 6, 8] }} >
+    <Canvas camera={{ position: cameraPosition }} >
       {!gameOver && <Scoreboard
         score={scoreCount}
       />
       }
-      {gameOver && <GameOver score={scoreCount}         handleReset={handleReset}
-/>}
-      
+      {gameOver && <GameOver score={scoreCount} handleReset={handleReset}
+      />}
+
       {!blockInPlay && boxes.map((box, index) => (
+
         <Box
           key={box.id}
           uniqueID={count}
@@ -196,14 +201,16 @@ export default function App() {
           updateLockedState={updateLockedState}
           posStore={posStore}
           reducedPosStoreLength={posStore.length < previousPosStoreLength} // add this prop
-
         />
       ))}
-      <OrbitControls maxPolarAngle={Math.PI / 2} 
-      // autoRotate={gameOver ? true : false} 
+      <OrbitControls
+        ref={orbitControlsRef}
+
+        maxPolarAngle={Math.PI / 2}
+        autoRotate={gameOver ? true : false}
       />
       <axesHelper args={[5]} />
-      <gridHelper position={[0, 5, 0]} color="hotpink"  />
+      <gridHelper position={[0, 5, 0]} color="hotpink" />
       <gridHelper />
       <Stats />
 
