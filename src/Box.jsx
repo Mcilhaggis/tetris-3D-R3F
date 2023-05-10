@@ -4,7 +4,7 @@ import { Color } from 'three'
 
 export default function Box(props) {
   const ref = useRef()
-console.log(ref.current)
+  console.log(ref.current)
   const [selected, setSelected] = useState(true)
   const [movingLeft, setMovingLeft] = useState(false)
   const [movingRight, setMovingRight] = useState(false)
@@ -12,7 +12,8 @@ console.log(ref.current)
   const [locked, setIsLocked] = useState(false)
   const [count, setCount] = useState(0)
   const [color, setColor] = useState(new Color(Math.floor(Math.random() * 16777216)));
-// console.log(count, setColor, setSelected)
+  // console.log(count, setColor, setSelected)
+
   useEffect(() => {
     if (props.reducedPosStoreLength) {
       for (var i = 0; i < props.posStore.length; i++) {
@@ -20,8 +21,7 @@ console.log(ref.current)
           ref.current.position.x = props.posStore[i].x
           ref.current.position.y = props.posStore[i].y
           ref.current.position.z = props.posStore[i].z
-                props.updateBlockInPlay(false)
-
+          props.updateBlockInPlay(false)
         }
       }
     }
@@ -29,7 +29,7 @@ console.log(ref.current)
 
 
   const moveDown = () => {
-    console.log('ref.current', ref.current)
+    console.log('ref.current', ref.current, props.posState)
     if (ref.current.position.y > 0.5 && !locked) {
       let newPosition = { ...ref.current.position };
       newPosition.y -= 1
@@ -37,17 +37,17 @@ console.log(ref.current)
         let validMove = props.checkValidMove(ref.current.uuid, newPosition);
         if (validMove) {
           ref.current.position.y -= 1;
-          props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uniqueID);
+          props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uuid);
         } else {
           setIsLocked(true)
-          props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uniqueID);
+          props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uuid);
 
           return
         }
         if (ref.current.position.y <= 0.5) {
           ref.current.position.y = 0.5;
           setIsLocked(true);
-          props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uniqueID);
+          props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uuid);
         }
         setCount((count) => count + 1);
       }
@@ -79,7 +79,7 @@ console.log(ref.current)
     // If space bar pressed, send all the way down.
     if (props.keyMap['Space'] && selected) {
       ref.current.position.y = 0.5
-      props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uniqueID);
+      props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uuid);
 
     }
     // Moving negatively on x-axis (left)
@@ -89,7 +89,7 @@ console.log(ref.current)
       let validMove = props.checkValidMove(ref.current.uuid, newPosition); //to check if its moving to an empty space
       if (validMove) {
         ref.current.position.x -= 1
-        props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uniqueID);
+        props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uuid);
         setMovingLeft(true)
       } else return
 
@@ -103,7 +103,7 @@ console.log(ref.current)
       let validMove = props.checkValidMove(ref.current.uuid, newPosition);
       if (validMove) {
         ref.current.position.x += 1
-        props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uniqueID);
+        props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uuid);
         setMovingRight(true)
       } else return
     } else if ((!props.keyMap['KeyD'] && movingRight)) {
@@ -116,7 +116,7 @@ console.log(ref.current)
       let validMove = props.checkValidMove(ref.current.uuid, newPosition);
       if (validMove) {
         ref.current.position.y -= 1
-        props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uniqueID);
+        props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uuid);
         setMovingDown(true)
       } else {
         setIsLocked(true)
@@ -133,6 +133,7 @@ console.log(ref.current)
       props.updateLockedState(ref.current.uuid, locked)
     }
   }, [locked])
+
 
   return (
     <mesh ref={ref} {...props}>

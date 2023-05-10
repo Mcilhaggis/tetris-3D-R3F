@@ -19,13 +19,15 @@ when a line is removed the blocks above it should all move down one row - done
 when a line of blocks is removed the score goes up - done
 when the line is met it's game over and an overlay appears with a replay button - done
 when the replay button is clicked the score goes to zero and the blocks start to fall - done
+There is an upper limit, defined by a visual line - done
+more than a single blok should be possible as a game play token - done
 
 TO DO:
 the place that the block is potioned above shouold illuminate to indicate placement
 the edges of the blocks should be a darker colour
+blocks that are gouped together should not fall seperated
 blocks should be different shapes randomly 
 block must be able to rotate, pressing R
-There is an upper limit, defined by a visual line
 add a pause feature
 
 

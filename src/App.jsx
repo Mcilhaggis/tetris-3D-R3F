@@ -1,6 +1,5 @@
 import { Canvas } from '@react-three/fiber'
 import Box from './Box'
-import DoubleBlock from './DoubleBlock'
 import Scoreboard from './Scoreboard'
 import GameOver from './GameOver'
 import { Stats, OrbitControls } from '@react-three/drei'
@@ -39,9 +38,10 @@ export default function App() {
       return false;
     } else return true;
   }
-
-  const updatePosState = (newStateID, newState, passedID) => {
-    const updateArr = posStore.map(item => {
+// When dropping multiple boxes the posState is not updated in time and sent back to store both, so only sves the last box passed
+const updatePosState = (newStateID, newState, passedID) => {
+  setPosStore(prevState => {
+    const updateArr = prevState.map(item => {
       if (item.id === newStateID) {
         return {
           ...item,
@@ -65,9 +65,10 @@ export default function App() {
     if (!updateArr.some(item => item.id === newStateID)) {
       updateArr.push(newItem);
     }
-    setPosStore(updateArr)
-    return true;
-  }
+    return updateArr;
+  });
+  return true;
+}
 
   // Check for a complete line being made
   useEffect(() => {
@@ -183,6 +184,7 @@ export default function App() {
     console.log('randomValue, ', randomValue)
     let newBoxes = randomValue.positions.map((pos, i) => ({
       id: i,
+      groupID: randomValue.name + '-' + count,
       uniqueID: null,
       x: pos.x,
       y: pos.y,
@@ -198,7 +200,7 @@ export default function App() {
     if (!blockInPlay && !completeLine && !gameOver) {
       if (!gameOver) {
         createNewBox()
-        
+
       }
       setCount(count + 1)
     }
@@ -219,13 +221,13 @@ export default function App() {
       {/* Show the score */}
       {!gameOver && <Scoreboard score={scoreCount} />}
       {/* If game over show the score and replay option */}
-      {gameOver && <GameOver score={scoreCount} handleReset={handleReset} />}
+      {/* {gameOver && <GameOver score={scoreCount} handleReset={handleReset} />} */}
       {console.log('boxes', boxes)}
       {console.log('posStore', posStore)}
       {!blockInPlay && boxes.map((box, index) => (
         <Box
-          key={box.id + index}
-          uniqueID={count}
+          key={box.groupID + index}
+          // uniqueID={count}
           position={[box.x, box.y, box.z]}
           checkValidMove={checkValidMove}
           updatePosState={updatePosState}
@@ -233,7 +235,7 @@ export default function App() {
           updateBlockInPlay={updateBlockInPlay}
           updateLockedState={updateLockedState}
           posStore={posStore}
-          reducedPosStoreLength={posStore.length < previousPosStoreLength} // add this prop
+          reducedPosStoreLength={posStore.length < previousPosStoreLength}
         />
       ))}
       <OrbitControls
