@@ -1,5 +1,6 @@
 import { Canvas } from '@react-three/fiber'
 import Box from './Box'
+import DoubleBlock from './DoubleBlock'
 import Scoreboard from './Scoreboard'
 import GameOver from './GameOver'
 import { Stats, OrbitControls } from '@react-three/drei'
@@ -152,11 +153,44 @@ export default function App() {
     })
     return setPosStore(updateArr)
   }
+  let blockTypes = [
+    {
+      'name': 'single',
+      'blockNum': 1,
+      'positions': [{ x: pos[0], y: pos[1], z: pos[2] }]
+    },
+    {
+      'name': 'double',
+      'blockNum': 2,
+      'positions': [
+        { x: pos[0] - 1, y: pos[1], z: pos[2] },
+        { x: pos[0], y: pos[1], z: pos[2] },
+      ]
+    },
+    {
+      'name': 'triple',
+      'blockNum': 3,
+      'positions': [
+        { x: pos[0] - 1, y: pos[1], z: pos[2] },
+        { x: pos[0], y: pos[1], z: pos[2] },
+        { x: pos[0] + 1, y: pos[1], z: pos[2] }
+      ]
+    }
+  ]
 
-  const createNewBox = () => {
-    setBoxes(
-      [...boxes,
-      { id: count, uniqueID: null, x: pos[0], y: pos[1], z: pos[2], locked: false }])
+  function createNewBox() {
+    let randomValue = blockTypes[Math.floor(Math.random() * blockTypes.length)];
+    console.log('randomValue, ', randomValue)
+    let newBoxes = randomValue.positions.map((pos, i) => ({
+      id: i,
+      uniqueID: null,
+      x: pos.x,
+      y: pos.y,
+      z: pos.z,
+      locked: false
+    }));
+    console.log('newBoxes', newBoxes)
+    setBoxes([...boxes, ...newBoxes]);
   }
 
   const updateBlockInPlay = (newState) => {
@@ -164,6 +198,7 @@ export default function App() {
     if (!blockInPlay && !completeLine && !gameOver) {
       if (!gameOver) {
         createNewBox()
+        
       }
       setCount(count + 1)
     }
@@ -181,19 +216,17 @@ export default function App() {
 
   return (
     <Canvas camera={{ position: cameraPosition }} >
-      {!gameOver && <Scoreboard
-        score={scoreCount}
-      />
-      }
-      {gameOver && <GameOver score={scoreCount} handleReset={handleReset}
-      />}
-
+      {/* Show the score */}
+      {!gameOver && <Scoreboard score={scoreCount} />}
+      {/* If game over show the score and replay option */}
+      {gameOver && <GameOver score={scoreCount} handleReset={handleReset} />}
+      {console.log('boxes', boxes)}
+      {console.log('posStore', posStore)}
       {!blockInPlay && boxes.map((box, index) => (
-
         <Box
-          key={box.id}
+          key={box.id + index}
           uniqueID={count}
-          position={[pos[0], pos[1], pos[2]]}
+          position={[box.x, box.y, box.z]}
           checkValidMove={checkValidMove}
           updatePosState={updatePosState}
           keyMap={keyMap}
@@ -207,7 +240,7 @@ export default function App() {
         ref={orbitControlsRef}
 
         maxPolarAngle={Math.PI / 2}
-        autoRotate={gameOver ? true : false}
+      // autoRotate={gameOver ? true : false}
       />
       <axesHelper args={[5]} />
       <gridHelper position={[0, 5, 0]} color="hotpink" />

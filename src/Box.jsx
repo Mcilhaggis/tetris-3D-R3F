@@ -4,7 +4,7 @@ import { Color } from 'three'
 
 export default function Box(props) {
   const ref = useRef()
-
+console.log(ref.current)
   const [selected, setSelected] = useState(true)
   const [movingLeft, setMovingLeft] = useState(false)
   const [movingRight, setMovingRight] = useState(false)
@@ -29,6 +29,7 @@ export default function Box(props) {
 
 
   const moveDown = () => {
+    console.log('ref.current', ref.current)
     if (ref.current.position.y > 0.5 && !locked) {
       let newPosition = { ...ref.current.position };
       newPosition.y -= 1
