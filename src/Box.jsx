@@ -4,16 +4,16 @@ import { Color } from 'three'
 
 export default function Box(props) {
   const ref = useRef()
-  console.log(ref.current)
   const [selected, setSelected] = useState(true)
   const [movingLeft, setMovingLeft] = useState(false)
   const [movingRight, setMovingRight] = useState(false)
   const [movingDown, setMovingDown] = useState(false)
-  const [locked, setIsLocked] = useState(false)
   const [count, setCount] = useState(0)
   const [color, setColor] = useState(new Color(Math.floor(Math.random() * 16777216)));
-  // console.log(count, setColor, setSelected)
+  const { id, locked } = props.item;
 
+
+  // Remove lined up blocks from the posStore
   useEffect(() => {
     if (props.reducedPosStoreLength) {
       for (var i = 0; i < props.posStore.length; i++) {
@@ -27,33 +27,44 @@ export default function Box(props) {
     }
   }, [props.reducedPosStoreLength]);
 
-
   const moveDown = () => {
-    console.log('ref.current', ref.current, props.posState)
     if (ref.current.position.y > 0.5 && !locked) {
       let newPosition = { ...ref.current.position };
       newPosition.y -= 1
       if (!locked) {
-        let validMove = props.checkValidMove(ref.current.uuid, newPosition);
+        let validMove = props.checkValidMove(props.uniqueID, newPosition, ref.current.groupID, props.posStore);
         if (validMove) {
+          // const updatedLocked = false;
+          console.log('valid')
+          // If the partner piece is being locked for hitting the group pieces aren't updated fast enough untill the next move
+          console.log('valid')
+          props.updatePosState(props.uniqueID, ref.current.position, ref.current.groupID);
           ref.current.position.y -= 1;
-          props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uuid);
         } else {
-          setIsLocked(true)
-          props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uuid);
+          // setIsLocked(true)
+          // const updatedLocked = !locked;
+
+          props.updatePosState(props.uniqueID, ref.current.position, ref.current.groupID);
+          props.onLockChange(id, ref.current.groupID, true);
 
           return
         }
         if (ref.current.position.y <= 0.5) {
+          
           ref.current.position.y = 0.5;
-          setIsLocked(true);
-          props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uuid);
+          // setIsLocked(true);
+          // const updatedLocked = !locked;
+
+          // Call the callback to update the locked state in the parent component
+          props.onLockChange(id, ref.current.groupID, true);
+          props.updatePosState(props.uniqueID, ref.current.position, ref.current.groupID);
         }
         setCount((count) => count + 1);
       }
     }
   }
 
+  // Move the block down every second
   useEffect(() => {
     const timer = setInterval(() => {
       if (!locked) {
@@ -68,28 +79,30 @@ export default function Box(props) {
   useFrame((_, delta) => {
 
     if (ref.current.position.y <= 0.5) {
-      setIsLocked(true)
+      // props.onLockChange(id, ref.current.groupID, true);
+
       ref.current.position.y = 0.5;
     }
 
     // If its sitting at the bottom of the board, restrict movement
     if (ref.current.position.y === 0.5) {
-      setIsLocked(true)
+      // props.onLockChange(id, ref.current.groupID, true);
+
     }
     // If space bar pressed, send all the way down.
     if (props.keyMap['Space'] && selected) {
       ref.current.position.y = 0.5
-      props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uuid);
+      props.updatePosState(props.uniqueID, ref.current.position, ref.current.groupID);
 
     }
     // Moving negatively on x-axis (left)
     if (props.keyMap['KeyA'] && selected && !movingLeft && ref.current.position.x > -4.5 && !locked) {
       let newPosition = { ...ref.current.position }; // create a new object based on the current position
       newPosition.x -= 1; // modify the new object's x property
-      let validMove = props.checkValidMove(ref.current.uuid, newPosition); //to check if its moving to an empty space
+      let validMove = props.checkValidMove(props.uniqueID, newPosition); //to check if its moving to an empty space
       if (validMove) {
         ref.current.position.x -= 1
-        props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uuid);
+        props.updatePosState(props.uniqueID, ref.current.position, ref.current.groupID);
         setMovingLeft(true)
       } else return
 
@@ -100,10 +113,10 @@ export default function Box(props) {
     if (props.keyMap['KeyD'] && selected && !movingRight && ref.current.position.x < 4.5 && !locked) {
       let newPosition = { ...ref.current.position };
       newPosition.x += 1
-      let validMove = props.checkValidMove(ref.current.uuid, newPosition);
+      let validMove = props.checkValidMove(props.uniqueID, newPosition);
       if (validMove) {
         ref.current.position.x += 1
-        props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uuid);
+        props.updatePosState(props.uniqueID, ref.current.position, ref.current.groupID);
         setMovingRight(true)
       } else return
     } else if ((!props.keyMap['KeyD'] && movingRight)) {
@@ -113,13 +126,15 @@ export default function Box(props) {
     if (props.keyMap['KeyS'] && selected && !movingDown && ref.current.position.y > 0.5 && !locked) {
       let newPosition = { ...ref.current.position };
       newPosition.y -= 1
-      let validMove = props.checkValidMove(ref.current.uuid, newPosition);
+      let validMove = props.checkValidMove(props.uniqueID, newPosition);
       if (validMove) {
         ref.current.position.y -= 1
-        props.updatePosState(ref.current.uuid, ref.current.position, ref.current.uuid);
+        props.updatePosState(props.uniqueID, ref.current.position, ref.current.groupID);
         setMovingDown(true)
       } else {
-        setIsLocked(true)
+        // setIsLocked(true)
+        props.onLockChange(id, ref.current.groupID, true);
+
         return
       }
     } else if ((!props.keyMap['KeyS'] && movingDown)) {
@@ -128,17 +143,23 @@ export default function Box(props) {
   })
 
   useEffect(() => {
-    if (locked) {
+    if (props.locked) {
       props.updateBlockInPlay(false)
-      props.updateLockedState(ref.current.uuid, locked)
+      // props.updateLockedState(props.uniqueID, locked, ref.current.groupID)
     }
-  }, [locked])
+  }, [props.locked])
+
+  // If the another block in the group locks, lock the blocks its grouped with
+  // const handleLockedStateChange = (newState) => {
+  //   setIsLocked(newState);
+  // };
+
 
 
   return (
     <mesh ref={ref} {...props}>
       <boxGeometry />
-      <meshBasicMaterial color={color} wireframe={!locked} />
+      <meshBasicMaterial color={color} wireframe={!props.locked} />
     </mesh>
 
   )

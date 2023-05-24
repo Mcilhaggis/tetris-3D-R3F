@@ -29,6 +29,13 @@ blocks that are gouped together should not fall seperated
 blocks should be different shapes randomly 
 block must be able to rotate, pressing R
 add a pause feature
+Make the game play 10 x 10 and both directions on the z plane can be a point
+Add websockts and make a multiplayer, where each user has a colour and it's like connect four but not one after the other, once a block is placed generate a new block for the player who has placed 
+
+
+What did I learn? 
+
+THat State should be held at the highest point as much as possible. In controlling the locked state of the group I found that ineeded to raise it up to the app p[arent to be able ot easily ocmmunicate that each block should be locked to it's group memebers. This shouldhave been ste up from the starts.
 
 
 bugs

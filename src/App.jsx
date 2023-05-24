@@ -5,7 +5,8 @@ import GameOver from './GameOver'
 import { Stats, OrbitControls } from '@react-three/drei'
 import useKeyboard from './usekeyboard'
 import { useEffect, useState, useRef } from 'react'
-// let count = 0
+import { v4 as uuidv4 } from 'uuid';
+
 
 export default function App() {
 
@@ -31,45 +32,82 @@ export default function App() {
   const previousPosStoreLength = previousPosStoreLengthRef.current;
 
 
-  const checkValidMove = (newStateID, newState) => {
-    const existingItem = posStore.find(item => item.id !== newStateID && item.x === newState.x && item.y === newState.y);
+  const checkValidMove = (uniqueID, newState, groupID, locked) => {
+    console.log(posStore)
+    // If an item with not the same unique ID is found with the same x and y oordinates the block wants to move into return true for
+    const existingItem = posStore.find(item => item.uniqueID !== uniqueID
+      && item.x === newState.x
+      && item.y === newState.y);
     if (existingItem) {
       console.log('Error: block already exists with the same x and y values');
+      // setPosStore(prevPosStore => {
+      //   const updatedPosStore = prevPosStore.map(item => {
+      //     if (item.uniqueID === uniqueID || item.groupID === groupID) {
+      //       console.log('lock', item.uniqueID)
+      //       return { ...item, locked };
+      //     }
+      //     return item;
+      //   });
+      //   return updatedPosStore;
+      // });
       return false;
-    } else return true;
-  }
-// When dropping multiple boxes the posState is not updated in time and sent back to store both, so only sves the last box passed
-const updatePosState = (newStateID, newState, passedID) => {
-  setPosStore(prevState => {
-    const updateArr = prevState.map(item => {
-      if (item.id === newStateID) {
-        return {
-          ...item,
-          uniqueID: passedID,
-          x: newState.x,
-          y: newState.y,
-          locked: newState.locked
-        }
-      } else {
-        return item;
-      }
-    })
-    const newItem = {
-      id: newStateID,
-      uniqueID: passedID,
-      x: newState.x,
-      y: newState.y,
-      z: newState.z,
-    };
-
-    if (!updateArr.some(item => item.id === newStateID)) {
-      updateArr.push(newItem);
+    } else {
+      return true;
     }
-    return updateArr;
-  });
-  return true;
-}
+  }
 
+
+  const handleLockChange = (uniqueID, groupID, locked) => {
+    console.log('trying to lock', uniqueID, groupID, locked)
+
+    setPosStore(prevPosStore => {
+      const updatedPosStore = prevPosStore.map(item => {
+        if (item.uniqueID === uniqueID || item.groupID === groupID) {
+          return { ...item, locked };
+        }
+        return item;
+      });
+      return updatedPosStore;
+    });
+  };
+
+
+
+  const updatePosState = (uniqueID, position, groupID, locked) => {
+    // Use previous state to make sure multi box updates don't overwrite each other by being saved at the same time
+    setPosStore(prevState => {
+      const updateArr = prevState.map(item => {
+        if (item.uniqueID === uniqueID) {
+          return {
+            ...item,
+            uniqueID: uniqueID,
+            x: position.x,
+            y: position.y,
+            // locked: locked,
+            groupID: groupID
+          }
+        } else {
+          return item;
+        }
+      })
+      const newItem = {
+        id: uniqueID,
+        groupID: groupID,
+        uniqueID: uniqueID,
+        locked: false,
+        x: position.x,
+        y: position.y,
+        z: position.z
+      };
+      if (!updateArr.some(item => item.uniqueID === uniqueID)) {
+        updateArr.push(newItem);
+      }
+      return updateArr;
+    });
+    return true;
+  }
+
+  
   // Check for a complete line being made
   useEffect(() => {
     let counterY;
@@ -90,6 +128,7 @@ const updatePosState = (newStateID, newState, passedID) => {
         }
       }
     } else {
+      console.log('no block in play')
       updateBlockInPlay(false)
     }
   }, [posStore])
@@ -140,20 +179,6 @@ const updatePosState = (newStateID, newState, passedID) => {
   }, [completeLine])
 
 
-
-  const updateLockedState = (objID, locked) => {
-    const updateArr = posStore.map(item => {
-      if (item.id === objID) {
-        return {
-          ...item,
-          locked: locked
-        }
-      } else {
-        return item;
-      }
-    })
-    return setPosStore(updateArr)
-  }
   let blockTypes = [
     {
       'name': 'single',
@@ -181,18 +206,19 @@ const updatePosState = (newStateID, newState, passedID) => {
 
   function createNewBox() {
     let randomValue = blockTypes[Math.floor(Math.random() * blockTypes.length)];
-    console.log('randomValue, ', randomValue)
-    let newBoxes = randomValue.positions.map((pos, i) => ({
-      id: i,
+    // This index needs to be unique and not changed to the UUID later so that boxes can be identieifed from the start and not only after the uuid is assigned in the box component 
+    let newBlocks = randomValue.positions.map((pos, i) => ({
+      id: uuidv4(), // generate a unique ID for each new box
       groupID: randomValue.name + '-' + count,
-      uniqueID: null,
+      uniqueID: uuidv4(),
       x: pos.x,
       y: pos.y,
       z: pos.z,
       locked: false
     }));
-    console.log('newBoxes', newBoxes)
-    setBoxes([...boxes, ...newBoxes]);
+    setBoxes([...boxes, ...newBlocks]);
+    setPosStore([...posStore, ...newBlocks]);
+
   }
 
   const updateBlockInPlay = (newState) => {
@@ -200,7 +226,6 @@ const updatePosState = (newStateID, newState, passedID) => {
     if (!blockInPlay && !completeLine && !gameOver) {
       if (!gameOver) {
         createNewBox()
-
       }
       setCount(count + 1)
     }
@@ -221,21 +246,24 @@ const updatePosState = (newStateID, newState, passedID) => {
       {/* Show the score */}
       {!gameOver && <Scoreboard score={scoreCount} />}
       {/* If game over show the score and replay option */}
-      {/* {gameOver && <GameOver score={scoreCount} handleReset={handleReset} />} */}
-      {console.log('boxes', boxes)}
-      {console.log('posStore', posStore)}
-      {!blockInPlay && boxes.map((box, index) => (
+      {gameOver && <GameOver score={scoreCount} handleReset={handleReset} />}
+
+      {!blockInPlay && posStore.map((box, index) => (
         <Box
           key={box.groupID + index}
-          // uniqueID={count}
+          item={box}
           position={[box.x, box.y, box.z]}
+          groupID={box.groupID}
+          locked={box.locked}
           checkValidMove={checkValidMove}
+          uniqueID={box.uniqueID}
           updatePosState={updatePosState}
           keyMap={keyMap}
           updateBlockInPlay={updateBlockInPlay}
-          updateLockedState={updateLockedState}
           posStore={posStore}
           reducedPosStoreLength={posStore.length < previousPosStoreLength}
+          onLockChange={handleLockChange}
+
         />
       ))}
       <OrbitControls
