@@ -33,26 +33,16 @@ export default function App() {
 
 
   const checkValidMove = (uniqueID, newState, groupID, locked) => {
-    console.log(posStore)
     // If an item with not the same unique ID is found with the same x and y oordinates the block wants to move into return true for
-    const existingItem = posStore.find(item => item.uniqueID !== uniqueID
-      && item.groupID !== groupID
+    const existingItem = posStore.find(item => 
+      // item.uniqueID !== uniqueID && 
+      item.groupID !== groupID
       && item.x === newState.x
       && item.y === newState.y);
     if (existingItem) {
-      console.log('Error: block already exists with the same x and y values');
-      // setPosStore(prevPosStore => {
-      //   const updatedPosStore = prevPosStore.map(item => {
-      //     if (item.uniqueID === uniqueID || item.groupID === groupID) {
-      //       console.log('lock', item.uniqueID)
-      //       return { ...item, locked };
-      //     }
-      //     return item;
-      //   });
-      //   return updatedPosStore;
-      // });
       return false;
     } else {
+      
       return true;
     }
   }
@@ -63,7 +53,7 @@ export default function App() {
 
     setPosStore(prevPosStore => {
       const updatedPosStore = prevPosStore.map(item => {
-        if (item.uniqueID === uniqueID || item.groupID === groupID) {
+        if (item.groupID === groupID) {
           return { ...item, locked };
         }
         return item;
@@ -84,7 +74,6 @@ export default function App() {
             uniqueID: uniqueID,
             x: position.x,
             y: position.y,
-            // locked: locked,
             groupID: groupID
           }
         } else {

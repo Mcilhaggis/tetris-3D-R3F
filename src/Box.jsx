@@ -33,22 +33,23 @@ export default function Box(props) {
       let newPosition = { ...ref.current.position };
       newPosition.y -= 1
       if (!locked) {
+        // CHECK IF ITS A VALID MOVE FOR THE WHOLE GROUP NOT JUST ONE PIECE 
+        
         let validMove = props.checkValidMove(props.uniqueID, newPosition, ref.current.groupID, props.posStore);
-        if (validMove) {
-          // If the partner piece is being locked for hitting the group pieces aren't updated fast enough untill the next move
-          console.log('valid')
-          props.updatePosState(props.uniqueID, ref.current.position, ref.current.groupID);
-          ref.current.position.y -= 1;
-        } else {
-
+        
+        if (!validMove) {
+          console.log('not valid')
           props.updatePosState(props.uniqueID, ref.current.position, ref.current.groupID);
           props.onLockChange(id, ref.current.groupID, true);
-
           return
+        } else {
+          // If the partner piece is being locked for hitting the group pieces aren't updated fast enough untill the next move
+          console.log('valid')
+          ref.current.position.y -= 1;
+          props.updatePosState(props.uniqueID, ref.current.position, ref.current.groupID);
         }
         if (ref.current.position.y <= 0.5) {
           ref.current.position.y = 0.5;
-
           // Call the callback to update the locked state in the parent component
           props.onLockChange(id, ref.current.groupID, true);
           props.updatePosState(props.uniqueID, ref.current.position, ref.current.groupID);
@@ -66,12 +67,8 @@ export default function Box(props) {
       }
     }, 1000);
     return () => clearInterval(timer);
-
   }, [locked]);
 
-  useEffect(() => {
-
-  })
 
   useFrame((_, delta) => {
     // If its sitting at the bottom of the board, restrict movement
@@ -82,7 +79,6 @@ export default function Box(props) {
         setLockChangeExecuted(true); // Set the state variable to true to indicate that the lock change function has been executed
       }
     }
-
 
     // If space bar pressed, send all the way down.
     if (props.keyMap['Space'] && selected) {
