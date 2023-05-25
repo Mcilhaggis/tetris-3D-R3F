@@ -11,6 +11,7 @@ export default function Box(props) {
   const [count, setCount] = useState(0)
   const [color, setColor] = useState(new Color(Math.floor(Math.random() * 16777216)));
   const { id, locked } = props.item;
+  const [lockChangeExecuted, setLockChangeExecuted] = useState(false); // State variable to track if lock change function has been executed
 
 
   // Remove lined up blocks from the posStore
@@ -68,20 +69,21 @@ export default function Box(props) {
 
   }, [locked]);
 
+  useEffect(() => {
+
+  })
 
   useFrame((_, delta) => {
-
-    // if (ref.current.position.y <= 0.5) {
-      // props.onLockChange(id, ref.current.groupID, true);
-
-      // ref.current.position.y = 0.5;
-    // }
-
     // If its sitting at the bottom of the board, restrict movement
-    // if (ref.current.position.y === 0.5) {
-      // props.onLockChange(id, ref.current.groupID, true);
+    if (ref.current.position.y <= 0.5) {
+      ref.current.position.y = 0.5;
+      if (!lockChangeExecuted) {
+        props.onLockChange(id, ref.current.groupID, true);
+        setLockChangeExecuted(true); // Set the state variable to true to indicate that the lock change function has been executed
+      }
+    }
 
-    // }
+
     // If space bar pressed, send all the way down.
     if (props.keyMap['Space'] && selected) {
       ref.current.position.y = 0.5
@@ -122,16 +124,18 @@ export default function Box(props) {
       newPosition.y -= 1
       let validMove = props.checkValidMove(props.uniqueID, newPosition, ref.current.groupID, props.posStore);
       if (validMove) {
+        console.log('valud S')
+
         ref.current.position.y -= 1
         props.updatePosState(props.uniqueID, ref.current.position, ref.current.groupID);
         setMovingDown(true)
       } else {
-        // setIsLocked(true)
+        console.log('lock it')
         props.onLockChange(id, ref.current.groupID, true);
-
         return
       }
     } else if ((!props.keyMap['KeyS'] && movingDown)) {
+      console.log('move it down it')
       setMovingDown(false)
     }
   })
