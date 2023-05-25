@@ -34,15 +34,11 @@ export default function Box(props) {
       if (!locked) {
         let validMove = props.checkValidMove(props.uniqueID, newPosition, ref.current.groupID, props.posStore);
         if (validMove) {
-          // const updatedLocked = false;
-          console.log('valid')
           // If the partner piece is being locked for hitting the group pieces aren't updated fast enough untill the next move
           console.log('valid')
           props.updatePosState(props.uniqueID, ref.current.position, ref.current.groupID);
           ref.current.position.y -= 1;
         } else {
-          // setIsLocked(true)
-          // const updatedLocked = !locked;
 
           props.updatePosState(props.uniqueID, ref.current.position, ref.current.groupID);
           props.onLockChange(id, ref.current.groupID, true);
@@ -50,10 +46,7 @@ export default function Box(props) {
           return
         }
         if (ref.current.position.y <= 0.5) {
-          
           ref.current.position.y = 0.5;
-          // setIsLocked(true);
-          // const updatedLocked = !locked;
 
           // Call the callback to update the locked state in the parent component
           props.onLockChange(id, ref.current.groupID, true);
@@ -78,17 +71,17 @@ export default function Box(props) {
 
   useFrame((_, delta) => {
 
-    if (ref.current.position.y <= 0.5) {
+    // if (ref.current.position.y <= 0.5) {
       // props.onLockChange(id, ref.current.groupID, true);
 
-      ref.current.position.y = 0.5;
-    }
+      // ref.current.position.y = 0.5;
+    // }
 
     // If its sitting at the bottom of the board, restrict movement
-    if (ref.current.position.y === 0.5) {
+    // if (ref.current.position.y === 0.5) {
       // props.onLockChange(id, ref.current.groupID, true);
 
-    }
+    // }
     // If space bar pressed, send all the way down.
     if (props.keyMap['Space'] && selected) {
       ref.current.position.y = 0.5
@@ -99,7 +92,8 @@ export default function Box(props) {
     if (props.keyMap['KeyA'] && selected && !movingLeft && ref.current.position.x > -4.5 && !locked) {
       let newPosition = { ...ref.current.position }; // create a new object based on the current position
       newPosition.x -= 1; // modify the new object's x property
-      let validMove = props.checkValidMove(props.uniqueID, newPosition); //to check if its moving to an empty space
+      let validMove = props.checkValidMove(props.uniqueID, newPosition, ref.current.groupID, props.posStore);
+      //to check if its moving to an empty space
       if (validMove) {
         ref.current.position.x -= 1
         props.updatePosState(props.uniqueID, ref.current.position, ref.current.groupID);
@@ -113,7 +107,7 @@ export default function Box(props) {
     if (props.keyMap['KeyD'] && selected && !movingRight && ref.current.position.x < 4.5 && !locked) {
       let newPosition = { ...ref.current.position };
       newPosition.x += 1
-      let validMove = props.checkValidMove(props.uniqueID, newPosition);
+      let validMove = props.checkValidMove(props.uniqueID, newPosition, ref.current.groupID, props.posStore);
       if (validMove) {
         ref.current.position.x += 1
         props.updatePosState(props.uniqueID, ref.current.position, ref.current.groupID);
@@ -126,7 +120,7 @@ export default function Box(props) {
     if (props.keyMap['KeyS'] && selected && !movingDown && ref.current.position.y > 0.5 && !locked) {
       let newPosition = { ...ref.current.position };
       newPosition.y -= 1
-      let validMove = props.checkValidMove(props.uniqueID, newPosition);
+      let validMove = props.checkValidMove(props.uniqueID, newPosition, ref.current.groupID, props.posStore);
       if (validMove) {
         ref.current.position.y -= 1
         props.updatePosState(props.uniqueID, ref.current.position, ref.current.groupID);

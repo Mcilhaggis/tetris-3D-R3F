@@ -36,6 +36,7 @@ export default function App() {
     console.log(posStore)
     // If an item with not the same unique ID is found with the same x and y oordinates the block wants to move into return true for
     const existingItem = posStore.find(item => item.uniqueID !== uniqueID
+      && item.groupID !== groupID
       && item.x === newState.x
       && item.y === newState.y);
     if (existingItem) {
@@ -73,7 +74,7 @@ export default function App() {
 
 
 
-  const updatePosState = (uniqueID, position, groupID, locked) => {
+  const updatePosState = (uniqueID, position, groupID) => {
     // Use previous state to make sure multi box updates don't overwrite each other by being saved at the same time
     setPosStore(prevState => {
       const updateArr = prevState.map(item => {
